@@ -1,0 +1,12 @@
+[submodule "rl_projects"]
+	path = rl_projects
+	url = git@github.com:mokrota21/RL_projects.git
+[submodule "nn_project"]
+	path = nn_project
+	url = git@github.com:mokrota21/Neural-Network-Project.git
+[submodule "progress_bot"]
+	path = progress_bot
+	url = git@github.com:mokrota21/ProgressBot.git
+[submodule "smart_insole"]
+	path = smart_insole
+	url = git@github.com:mokrota21/Smart_Insole.git
