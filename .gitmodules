@@ -10,3 +10,6 @@
 [submodule "smart_insole"]
 	path = smart_insole
 	url = git@github.com:mokrota21/Smart_Insole.git
+[submodule "Group4"]
+	path = Group4
+	url = https://github.com/VU-Applied-Programming-for-AI-2024/Group4.git
