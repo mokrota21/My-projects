@@ -111,8 +111,7 @@ There are various options for implementing and optimizing the calculation of thi
 
 #### Pixellate (-custom)
 
-Pixellates image into pixels of defined size.
-![encoding](https://developer.apple.com/documentation/coreimage/cifilter/3228393-pixellate/)
+Pixellates image into pixels of defined size. Idea from [link](https://developer.apple.com/documentation/coreimage/cifilter/3228393-pixellate/)
 
 ## Implementation
 
