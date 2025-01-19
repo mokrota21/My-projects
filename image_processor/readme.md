@@ -1,61 +1,61 @@
-# Графические фильтры (image_processor)
+# Image processor
 
-В этом задании требуется реализовать консольное приложение,
-позволяющее применять к изображениям различные фильтры,
-аналогичные фильтрам в популярных графических редакторах.
+This task requires you to implement a console application,
+allows you to apply various filters to images,
+similar to filters in popular graphic editors.
 
-## Поддерживаемый формат изображений
+## Supported image format
 
-Входные и выходные графические файлы должны быть в формате [BMP](http://en.wikipedia.org/wiki/BMP_file_format).
+Input and output graphic files must be in the format [BMP](http://en.wikipedia.org/wiki/BMP_file_format).
 
-Формат BMP поддерживает достаточно много вариаций, но в этом задании будет использоваться
-24-битный BMP без сжатия и без таблицы цветов. Тип используемого `DIB header` - `BITMAPINFOHEADER`.
+The BMP format supports quite a lot of variations, but in this task we will use
+24-bit BMP without compression and without color table. Type used `DIB header` - `BITMAPINFOHEADER`.
 
-Пример файла в нужном формате есть в статье на Википедии [в разделе "Example 1"](https://en.wikipedia.org/wiki/BMP_file_format#Example_1)
-и в папке [examples](examples).
+An example file in the required format is in the Wikipedia article [in the "Example 1" section](https://en.wikipedia.org/wiki/BMP_file_format#Example_1)
+and in the folder [examples](examples).
 
-При тестировании обязательно обращайте внимание на то, чтобы тестовое изображение 
-было сохранено именно в 24-битном BMP.
+When testing, be sure to ensure that the test image 
+was saved in 24-bit BMP.
 
-## Формат аргументов командной строки
+## Command Line Argument Format
 
-Описание формата аргументов командной строки:
+Description of the command line argument format:
 
-`{имя программы} {путь к входному файлу} {путь к выходному файлу}
-[-{имя фильтра 1} [параметр фильтра 1] [параметр фильтра 2] ...]
-[-{имя фильтра 2} [параметр фильтра 1] [параметр фильтра 2] ...] ...`
+`{program name} {path to input file} {path to output file}
+[-{filter name 1} [filter parameter 1] [filter parameter 2] ...]
+[-{filter name 2} [filter parameter 1] [filter parameter 2] ...] ...`
 
-При запуске без аргументов программа выводит справку.
+When run without arguments, the program displays help.
 
-### Пример
+### Example
 `./image_processor input.bmp /tmp/output.bmp -crop 800 600 -gs -blur 0.5`
 
-В этом примере
-1. Загружается изображение из файла `input.bmp`
-2. Обрезается до изображения с началом в верхнем левом углу и размером 800х600 пикселей
-3. Переводится в оттенки серого
-4. Применяется размытие с сигмой 0.5
-5. Полученное изображение сохраняется в файл `/tmp/output.bmp`
+In this example
+1. The image is loaded from the file `input.bmp`
+2. Cropped to an image starting in the upper left corner and 800x600 pixels in size
+3. Converted to grayscale
+4. Apply blur with sigma 0.5
+5. The resulting image is saved to the file `/tmp/output.bmp`
 
-Список фильтров может быть пуст, тогда изображение должно быть сохранено в неизменном виде.
-Фильтры применяются в том порядке, в котором они перечислены в аргументах командной строки.
+The list of filters may be empty, then the image must be saved unchanged.
+Filters are applied in the order they are listed in the command line arguments.
 
-## Фильтры
+## Filters
 
-В формулах далее считаем, что каждая компонента цвета
-представлена вещественным числом от 0 до 1. Цвета пикселей
-представлены тройками `(R, G, B)`. Таким образом, `(0, 0, 0)` – черный, 
-`(1, 1, 1)` – белый.
+In the formulas we further assume that each color component
+represented by a real number from 0 to 1. Pixel colors
+represented by triplets `(R, G, B)`. Thus, `(0, 0, 0)` is black, 
+`(1, 1, 1)` – white.
 
-Если фильтр задан матрицей, это означает, что значение каждого из цветов определяется взвешенной суммой
-значений этого цвета в соседних пикселях в соответствии с матрицей. При этом целевому пикселю
-соответствует центральный элемент матрицы.
+If the filter is specified by a matrix, this means that the value of each of the colors is determined by the weighted sum
+values ​​of this color in neighboring pixels in accordance with the matrix. In this case, the target pixel
+corresponds to the central element of the matrix.
 
-Например, для фильтра, заданного матрицей
+For example, for a filter defined by the matrix
 
 ![encoding](https://latex.codecogs.com/svg.image?%5Cbegin%7Bbmatrix%7D1%20&%202%20&%203%20%5C%5C4%20&%205%20&%206%20%5C%5C7%20&%208%20&%209%20%5C%5C%5Cend%7Bbmatrix%7D)
 
-Значение каждого из цветов целевого пикселя `C[x][y]` будет определяться формулой
+The value of each of the colors of the target pixel `C[x][y]` will be determined by the formula
 
 ```
 C[x][y] =
@@ -66,135 +66,70 @@ C[x][y] =
 ))
 ```
 
-При обработке пикселей, близких к краю изображения, часть матрицы может выходить за границу изображения.
-В таком случае в качестве значения пикселя, выходящего за границу, следует использовать значение ближайшего
-к нему пикселя изображения. 
+When processing pixels close to the edge of the image, part of the matrix may extend beyond the border of the image.
+In this case, the value of the nearest pixel should be used as the value of the pixel that goes beyond the boundary.
+image pixel to it. 
 
-### Список базовых фильтров
+### List of basic filters
 
 #### Crop (-crop width height)
-Обрезает изображение до заданных ширины и высоты. Используется верхняя левая часть изображения.
+Crop the image to the specified width and height. The top left part of the image is used.
 
-Если запрошенные ширина или высота превышают размеры исходного изображения, выдается доступная часть изображения.
+If the requested width or height exceeds the dimensions of the original image, the available portion of the image is returned.
 
 #### Grayscale (-gs)
-Преобразует изображение в оттенки серого по формуле
+Converts an image to grayscale using the formula
 
 ![encoding](https://latex.codecogs.com/svg.image?R'%20=%20G'%20=%20B'%20=0.299%20R%20&plus;%200%20.587%20G%20&plus;%200%20.%20114%20B)
 
 #### Negative (-neg)
-Преобразует изображение в негатив по формуле
+Converts an image to a negative using the formula
 
 ![encoding](https://latex.codecogs.com/svg.image?R'%20=%201%20-%20R,%20G'%20=%201%20-%20G,%20B'%20=%201%20-%20B)
 
 #### Sharpening (-sharp)
-Повышение резкости. Достигается применением матрицы
+Sharpening. Achieved by using a matrix
 
 ![encoding](https://latex.codecogs.com/svg.image?%5Cbegin%7Bbmatrix%7D%20&%20-1%20&%20%20%5C%5C-1%20&%205%20&%20-1%20%5C%5C%20&%20-1%20&%20%20%5C%5C%5Cend%7Bbmatrix%7D)
 
 #### Edge Detection (-edge threshold)
-Выделение границ. Изображение переводится в оттенки серого и применяется матрица
+Border selection. The image is converted to grayscale and the matrix is ​​applied
 
 ![encoding](https://latex.codecogs.com/svg.image?%5Cbegin%7Bbmatrix%7D%20&%20-1%20&%20%20%5C%5C-1%20&%204%20&%20-1%20%5C%5C%20&%20-1%20&%20%20%5C%5C%5Cend%7Bbmatrix%7D)
 
-Пиксели со значением, превысившим `threshold`, окрашиваются в белый, остальные – в черный.
+Pixels with a value exceeding `threshold` are colored white, the rest - black.
 
 #### Gaussian Blur (-blur sigma)
-[Гауссово размытие](https://ru.wikipedia.org/wiki/Размытие_по_Гауссу),
-параметр – сигма.
+[Gaussian blur](https://ru.wikipedia.org/wiki/Размытие_по_Гауссу),
+parameter – sigma.
 
-Значение каждого из цветов пикселя `C[x0][y0]` определяется формулой
+The value of each pixel color `C[x0][y0]` is determined by the formula
 
 ![encoding](https://latex.codecogs.com/svg.image?C%5Bx_0%5D%5By_0%5D%20=%20%5Csum_%7Bx=0,y=0%7D%5E%7Bwidth-1,%20height-1%7DC%5Bx%5D%5By%5D%5Cfrac%7B1%7D%7B%5Csqrt%5B%5D%7B2%5Cpi%5Csigma%5E2%7D%7De%5E%7B-%5Cfrac%7B%5Cleft%7Cx_o-x%5Cright%7C%5E2%20&plus;%20%5Cleft%7Cy_o-y%5Cright%7C%5E2%7D%7B2%5Csigma%5E2%7D%7D)
 
-Существуют различные варианты релализации и оптимизации вычисления этого фильтра, описание есть [в Википедии](https://ru.wikipedia.org/wiki/Размытие_по_Гауссу).
+There are various options for implementing and optimizing the calculation of this filter, there is a description [In wikipedia](https://ru.wikipedia.org/wiki/Размытие_по_Гауссу).
 
-### Дополнительные фильтры
+#### Pixellate (-custom)
 
-Дополнительно надо сделать как минимум один собственный фильтр.
+Pixellates image into pixels of defined size.
+![encoding](https://developer.apple.com/documentation/coreimage/cifilter/3228393-pixellate/)
 
-Фильтр должен быть нетривиальным. Идеи можно взять
-[здесь](https://developer.apple.com/library/mac/documentation/graphicsimaging/reference/CoreImageFilterReference/Reference/reference.html).
+## Implementation
 
-Хорошие примеры: [Crystallize](https://developer.apple.com/library/archive/documentation/GraphicsImaging/Reference/CoreImageFilterReference/index.html#//apple_ref/doc/filter/ci/CICrystallize), [Glass Distortion](https://developer.apple.com/library/archive/documentation/GraphicsImaging/Reference/CoreImageFilterReference/index.html#//apple_ref/doc/filter/ci/CIGlassDistortion).
+It is prohibited to use third-party libraries for working with images.
 
-Выбор собственного фильтра надо согласовать с семинаристом.
+Try to make all program components as universal as possible and not tied to the specifics of a specific task.
 
-Авторы самых интересных (по мнению лектора) фильтров получат бонус к баллам.
+All exception situations must be handled correctly with an error message that is understandable to the user.
+No scenarios, including the use of files with a format that does not comply with the specification, should cause the program to crash.
 
-## Реализация
+You will most likely need the following components:
+- A class that represents an image and provides work with it
+- Classes for reading and writing BMP format
+- Filters
+- Controller that controls the sequential application of filters
 
-Применять сторонние библиотеки для работы с изображениями запрещено.
+Common parts should be allocated through inheritance.
 
-Старайтесь делать все компоненты программы по возможности более универсальными и не привязанными к специфике конкретной задачи.
+It is recommended to discuss the detailed design of the program with the teacher at seminars.
 
-Все исключительные ситуации должны корректно обрабатываться с выводом понятного пользователю сообщения об ошибке.
-Никакие сценарии, включая использование файлов с форматом, не соответствующим спецификации, не должны приводить к "падению" программы.
-
-Скорее всего, вам понадобятся следующие компоненты:
-- Класс, представляющий изображение и обеспечивающий работу с ним
-- Классы для чтения и записи формата BMP
-- Фильтры
-- Контроллер, управляющий последовательным применением фильтров
-
-Общие части следует выделить через наследование.
-
-Подробный дизайн программы рекомендуется обсудить с преподавателем на семинарах.
-
-## Сдача и оценивание
-
-Все сдачи будут проходить код ревью.
-
-Вам предстоит написать всю программу с нуля.
-В корневом `CMakeLists.txt` задачи должен быть описан исполняемый файл с именем `image_processor`,
-в остальном вы можете менять файлы `CMakeLists.txt` как угодно.
-
-Для отправки кода проекта используйте ветку `projects/image_processor`.
-
-Статус проекта не будет отображаться на сайте https://cpp-hse.ru, поэтому после загрузки решения
-вам надо будет самостоятельно создать MR, назначить семинариста ревьюером и попросить его проверить ваш код.
-
-### Принципы начисления баллов
-
-Минимальная реализация проекта оценивается в **3 балла** и должна содержать:
-- Класс для представления цвета
-- Класс для представления изображения
-- Классы или функции для загрузки изображения из формата BMP и сохранения изображения в BMP
-- Один класс фильтра
-
-Решения, не удовлетворяющие требованиям к минимальной реализации, оцениваются в 0 баллов.
-
-Если решение удовлетворяет требованиям к минимальной реализации, дополнительно начисляется
-0.6 балла за каждый реализованный базовый фильтр (кроме входящего в минимальную реализацию). Таким образом,
-за фильтры можно получить еще до **3 баллов**.
-
-Если реализовано не менее 5 фильтров и фильтры образуют полную иерархию наследования,
-начисляется еще **2 балла**.
-
-За реализованный дополнительный фильтр начисляется **1 балл**. Дополнительный фильтр можно сдавать,
-если реализовано не менее 5 базовых фильтров.
-
-За покрытие юнит тестами всех критичных компонентов начисляется **1 балл**.
-Ваш семинарист поможет с определением достаточности покрытия.
-
-Баллы могут быть сняты за серьезные недочеты, например:
-- Отсутствие или неверную декомпозицию на файлы, классы, методы и функции
-- Утечки памяти
-- Падение программы
-  - на файлах неверного формата
-  - при вызове фильтров с некорректными аргументами
-  - при вызове некорректных фильтров
-- Неверный результат работы фильтров
-- Нечитаемый код
-- Нарушение стиля кодирования
-- UB на каком-либо входе или наборе аргументов функции
-- Выбор неэффективных структур данных или их неэффективное использование
-- Лишние копирования объектов
-- Неверные сигнатуры методов
-
-## Дедлайн
-
-Для проекта установлен **жесткий** дедлайн `23:59 27.03.2022` - это означает, что решения,
-отправленные после этого времени, не будут оцениваться.
-
-Дополнительных штрафов за время сдачи нет.
