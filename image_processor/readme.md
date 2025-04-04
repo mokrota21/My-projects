@@ -1,5 +1,7 @@
 # Image processor
 
+<img src="original.bmp" alt="alt text" style="width: 20cm;">
+
 This task requires you to implement a console application,
 allows you to apply various filters to images,
 similar to filters in popular graphic editors.
@@ -78,21 +80,33 @@ Crop the image to the specified width and height. The top left part of the image
 If the requested width or height exceeds the dimensions of the original image, the available portion of the image is returned.
 
 #### Grayscale (-gs)
+
+<img src="grayscale.bmp" alt="alt text" style="width: 20cm;">
+
 Converts an image to grayscale using the formula
 
 ![encoding](https://latex.codecogs.com/svg.image?R'%20=%20G'%20=%20B'%20=0.299%20R%20&plus;%200%20.587%20G%20&plus;%200%20.%20114%20B)
 
 #### Negative (-neg)
+
+<img src="negative.bmp" alt="alt text" style="width: 20cm;">
+
 Converts an image to a negative using the formula
 
 ![encoding](https://latex.codecogs.com/svg.image?R'%20=%201%20-%20R,%20G'%20=%201%20-%20G,%20B'%20=%201%20-%20B)
 
 #### Sharpening (-sharp)
+
+<img src="sharp.bmp" alt="alt text" style="width: 20cm;">
+
 Sharpening. Achieved by using a matrix
 
 ![encoding](https://latex.codecogs.com/svg.image?%5Cbegin%7Bbmatrix%7D%20&%20-1%20&%20%20%5C%5C-1%20&%205%20&%20-1%20%5C%5C%20&%20-1%20&%20%20%5C%5C%5Cend%7Bbmatrix%7D)
 
 #### Edge Detection (-edge threshold)
+
+<img src="edge_detection.bmp" alt="alt text" style="width: 20cm;">
+
 Border selection. The image is converted to grayscale and the matrix is ​​applied
 
 ![encoding](https://latex.codecogs.com/svg.image?%5Cbegin%7Bbmatrix%7D%20&%20-1%20&%20%20%5C%5C-1%20&%204%20&%20-1%20%5C%5C%20&%20-1%20&%20%20%5C%5C%5Cend%7Bbmatrix%7D)
@@ -100,6 +114,9 @@ Border selection. The image is converted to grayscale and the matrix is ​​ap
 Pixels with a value exceeding `threshold` are colored white, the rest - black.
 
 #### Gaussian Blur (-blur sigma)
+
+<img src="blur.bmp" alt="alt text" style="width: 20cm;">
+
 [Gaussian blur](https://ru.wikipedia.org/wiki/Размытие_по_Гауссу),
 parameter – sigma.
 
